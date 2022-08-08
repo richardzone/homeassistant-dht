@@ -26,6 +26,7 @@ from homeassistant.core import HomeAssistant
 import homeassistant.helpers.config_validation as cv
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.typing import ConfigType, DiscoveryInfoType
+from homeassistant.util import slugify
 from homeassistant.util import Throttle
 
 _LOGGER = logging.getLogger(__name__)
@@ -140,7 +141,8 @@ class DHTSensor(SensorEntity):
         self.temperature_offset = temperature_offset
         self.humidity_offset = humidity_offset
 
-        self._attr_name = f"{name} {description.name}"
+        self._attr_name: str = f"{name} {description.name}"
+        self._attr_unique_id: str = slugify(self._attr_name)
 
     def update(self):
         """Get the latest data from the DHT and updates the states."""
