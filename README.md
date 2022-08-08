@@ -20,4 +20,4 @@ Copy the `dht` folder and all of its contents into your Home Assistant's `custom
 
 # Credits
 
-Original
+[Original contributors](https://github.com/home-assistant/core/commits/2022.3.8/homeassistant/components/dht/sensor.py)
