@@ -38,7 +38,7 @@ CONF_TEMPERATURE_OFFSET = "temperature_offset"
 DEFAULT_NAME = "DHT Sensor"
 
 # DHT11 is able to deliver data once per second, DHT22 once every two
-MIN_TIME_BETWEEN_UPDATES = timedelta(seconds=30)
+MIN_TIME_BETWEEN_UPDATES = timedelta(seconds=2)
 
 SENSOR_TEMPERATURE = "temperature"
 SENSOR_HUMIDITY = "humidity"
@@ -185,10 +185,10 @@ class DHTClient:
         try:
             temperature = dht.temperature
             humidity = dht.humidity
-        except RuntimeError:
-            _LOGGER.debug("Unexpected value from DHT sensor: %s", self.name)
-        except Exception:  # pylint: disable=broad-except
-            _LOGGER.exception("Error updating DHT sensor: %s", self.name)
+        except RuntimeError as e:
+            _LOGGER.warning("Unexpected value from DHT sensor: %s", e)
+        except Exception as e:  # pylint: disable=broad-except
+            _LOGGER.exception("Error updating DHT sensor: %s", e)
         else:
             if temperature:
                 self.data[SENSOR_TEMPERATURE] = temperature
