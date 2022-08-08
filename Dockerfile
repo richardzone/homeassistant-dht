@@ -11,4 +11,4 @@ LABEL org.opencontainers.image.authors="Richard" \
   docker.build="docker build --pull -t richardzone/homeassistant-gpio:latest" \
 	docker.run="docker run --rm --name homeassistant_gpio --device=/dev/gpiomem -v ./config:/config -v /etc/localtime:/etc/localtime:ro --restart=unless-stopped --privileged --net=host -d richardzone/homeassistant-gpio:latest"
 
-apk add --no-cache libgpiod
+RUN apk add --no-cache libgpiod
