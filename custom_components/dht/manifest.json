@@ -1,0 +1,15 @@
+{
+  "domain": "dht",
+  "name": "DHT Sensor",
+  "documentation": "https://github.com/richardzone/homeassistant-dht",
+  "issue_tracker": "https://github.com/richardzone/homeassistant-dht/issues",
+  "requirements": [
+    "adafruit-circuitpython-dht==3.7.0",
+    "RPi.GPIO==0.7.1a4"
+  ],
+  "codeowners": [
+    "@richardzone"
+  ],
+  "iot_class": "local_polling",
+  "version": "2022.4.0"
+}
