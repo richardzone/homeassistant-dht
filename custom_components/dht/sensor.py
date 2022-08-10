@@ -180,7 +180,7 @@ class DHTClient:
         self.name = name
 
     # DHT11 is able to deliver data once per second, DHT22 once every two
-    @retry(reraise=True, retry=retry_if_exception_type(RuntimeError), stop=stop_after_attempt(10), wait = wait_random(min = 1, max = 2), after=after_log(_LOGGER, logging.WARNING))
+    @retry(reraise = True, retry = retry_if_exception_type(RuntimeError), stop = stop_after_attempt(10), wait = wait_random(min = 1, max = 2), after = after_log(_LOGGER, logging.WARNING))
     def read_retry(dht):
         temperature = dht.temperature
         humidity = dht.humidity
@@ -190,7 +190,7 @@ class DHTClient:
         """Get the latest data the DHT sensor."""
         dht = self.sensor(self.pin)
         try:
-            temperature, humidity = self.read_retry(dht)
+            temperature, humidity = DHTClient.read_retry(dht)
         except RuntimeError as e:
             _LOGGER.warning("Unexpected value from DHT sensor: %s", e)
         except Exception as e:  # pylint: disable=broad-except
