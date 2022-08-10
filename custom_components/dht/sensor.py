@@ -1,10 +1,10 @@
 """Support for Adafruit DHT temperature and humidity sensor."""
 from __future__ import annotations
 
-from datetime import timedelta
 import logging
 
 import adafruit_dht
+# import Adafruit_DHT
 import board
 import voluptuous as vol
 
@@ -27,7 +27,7 @@ import homeassistant.helpers.config_validation as cv
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.typing import ConfigType, DiscoveryInfoType
 from homeassistant.util import slugify
-from homeassistant.util import Throttle
+from tenacity import retry
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -37,8 +37,6 @@ CONF_TEMPERATURE_OFFSET = "temperature_offset"
 
 DEFAULT_NAME = "DHT Sensor"
 
-# DHT11 is able to deliver data once per second, DHT22 once every two
-MIN_TIME_BETWEEN_UPDATES = timedelta(seconds=2)
 
 SENSOR_TEMPERATURE = "temperature"
 SENSOR_HUMIDITY = "humidity"
@@ -101,6 +99,9 @@ def setup_platform(
         "AM2302": adafruit_dht.DHT22,
         "DHT11": adafruit_dht.DHT11,
         "DHT22": adafruit_dht.DHT22,
+        # "AM2302_OLD_LIBRARY": Adafruit_DHT.AM2302,
+        # "DHT11_OLD_LIBRARY": Adafruit_DHT.DHT11,
+        # "DHT22_OLD_LIBRARY": Adafruit_DHT.DHT22,
     }
     sensor = available_sensors.get(config[CONF_SENSOR])
     pin = config[CONF_PIN]
@@ -178,13 +179,18 @@ class DHTClient:
         self.data = {}
         self.name = name
 
-    @Throttle(MIN_TIME_BETWEEN_UPDATES)
+    # DHT11 is able to deliver data once per second, DHT22 once every two
+    @retry(reraise=True, retry=retry_if_exception_type(RuntimeError), stop=stop_after_attempt(10), wait = wait_random(min = 1, max = 2), after=after_log(_LOGGER, logging.WARNING))
+    def read_retry(dht):
+        temperature = dht.temperature
+        humidity = dht.humidity
+        return (temperature, humidity)
+
     def update(self):
         """Get the latest data the DHT sensor."""
         dht = self.sensor(self.pin)
         try:
-            temperature = dht.temperature
-            humidity = dht.humidity
+            temperature, humidity = self.read_retry(dht)
         except RuntimeError as e:
             _LOGGER.warning("Unexpected value from DHT sensor: %s", e)
         except Exception as e:  # pylint: disable=broad-except
