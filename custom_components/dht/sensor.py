@@ -27,7 +27,7 @@ import homeassistant.helpers.config_validation as cv
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.typing import ConfigType, DiscoveryInfoType
 from homeassistant.util import slugify
-from tenacity import retry
+from tenacity import retry, retry_if_exception_type, stop_after_attempt, wait_random, after_log
 
 _LOGGER = logging.getLogger(__name__)
 
