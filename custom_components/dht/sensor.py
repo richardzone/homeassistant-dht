@@ -27,7 +27,7 @@ import homeassistant.helpers.config_validation as cv
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.typing import ConfigType, DiscoveryInfoType
 from homeassistant.util import slugify
-from tenacity import retry, retry_if_exception_type, stop_after_attempt, wait_random, after_log
+from tenacity import retry, retry_if_exception_type, stop_after_attempt, after_log
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -180,7 +180,7 @@ class DHTClient:
         self.name = name
 
     # DHT11 is able to deliver data once per second, DHT22 once every two
-    @retry(reraise = True, retry = retry_if_exception_type(RuntimeError), stop = stop_after_attempt(10), wait = wait_random(min = 1, max = 2), after = after_log(_LOGGER, logging.WARNING))
+    @retry(reraise = True, retry = retry_if_exception_type(RuntimeError), stop = stop_after_attempt(15), after = after_log(_LOGGER, logging.WARNING))
     def read_retry(dht):
         temperature = dht.temperature
         humidity = dht.humidity
